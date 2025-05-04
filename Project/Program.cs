@@ -18,7 +18,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000").
+                          policy.WithOrigins("http://localhost:3000",
+                              "https://education-for-all-frontend.onrender.com").
                           AllowAnyMethod().
                           AllowAnyHeader().
                           AllowCredentials().
@@ -39,6 +40,7 @@ builder.Services.AddServices();
 
 // Configure dependency injection for database context
 builder.Services.AddDbContext<IContext, ApplicationDbContext>();
+
 
 // Configure JWT authentication and token validation parameters
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
