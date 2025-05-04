@@ -1,0 +1,30 @@
+# בחר את תמונת הבסיס לדוט-נט
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# בחר את התמונה שמכילה את הכלים לבניית האפליקציה (SDK)
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+
+# העתק את קבצי ה-proj לתוך הקונטיינר
+COPY ["Project/Project.csproj", "Project/"]
+
+# restore את התלויות
+RUN dotnet restore "Project/Project.csproj"
+
+# העתק את כל הקוד לתוך הקונטיינר
+COPY . .
+
+# בנה את הפרויקט
+WORKDIR "/src/Project"
+RUN dotnet build "Project.csproj" -c Release -o /app/build
+
+# פרסם את האפליקציה
+RUN dotnet publish "Project.csproj" -c Release -o /app/publish
+
+# הגדר את נקודת הכניסה
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Project.dll"]
