@@ -5,7 +5,7 @@
 namespace Project.DataContext.Migrations
 {
     /// <inheritdoc />
-    public partial class init2 : Migration
+    public partial class AddUtcConversion : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

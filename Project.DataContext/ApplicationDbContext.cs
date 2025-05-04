@@ -1,19 +1,27 @@
 ﻿
 using Common.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Project.Repositories.Entities;
 using Project.Repositories.Repositories;
 
 namespace Project.DataContext
 {
+
     public class ApplicationDbContext : DbContext, IContext
     {
+        private readonly IConfiguration _configuration;
         public DbSet<User> Users { get; set; }
         public DbSet<Counselor> Counselors { get; set; }
         public DbSet<Topic> Topics { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<DeleteTokenDto> DeleteTokens { get; set; }
         public DbSet<RefreshTokenDto> RefreshTokens { get; set; }
+
+        public ApplicationDbContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         public async Task Save()
         {
@@ -22,7 +30,8 @@ namespace Project.DataContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"server=(local)\SQLEXPRESS;database=Educational_forum1;trusted_connection=true;TrustServerCertificate=True;");
+            var connectionString = _configuration["DefaultConnection"];
+            optionsBuilder.UseNpgsql(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,14 +49,28 @@ namespace Project.DataContext
                 .HasForeignKey(p => p.CounselorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
             modelBuilder.Entity<Topic>()
                 .Property(t => t.DateCreated)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("NOW()");
 
             modelBuilder.Entity<Post>()
                 .Property(t => t.Date)
-                .HasDefaultValueSql("GETDATE()");
+                .HasDefaultValueSql("NOW()");
+
+            // Apply UTC conversion for DateTime properties
+            modelBuilder.Entity<Topic>()
+                .Property(t => t.DateCreated)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
+
+            modelBuilder.Entity<Post>()
+                .Property(t => t.Date)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
 
             base.OnModelCreating(modelBuilder);
         }
