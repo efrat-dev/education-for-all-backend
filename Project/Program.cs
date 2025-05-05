@@ -19,7 +19,7 @@ builder.Services.AddCors(options =>
                       policy =>
                       {
                           policy.WithOrigins("http://localhost:3000",
-                              "https://education-for-all.onrender.com").
+                              "https://education-for-all.onrender.com/api").
                           AllowAnyMethod().
                           AllowAnyHeader().
                           AllowCredentials().
