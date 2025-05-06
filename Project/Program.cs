@@ -18,9 +18,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.AllowAnyOrigin().
+                          policy.WithOrigins("http://localhost:3000",
+                              "https://education-for-all.onrender.com").
                           AllowAnyMethod().
                           AllowAnyHeader().
+                          AllowCredentials().
                           WithExposedHeaders("Content-Disposition", "Access-Control-Allow-Origin");
                       });
 
