@@ -38,7 +38,9 @@ namespace Project.Controllers
         {
             try
             {
+                Console.WriteLine("אני בתוך פוסט של טופיק");
                 var addedTopic = await _topicService.AddAsync(topic);
+                Console.WriteLine("אחרי הסרויויס"+ addedTopic);
                 if (addedTopic == null)
                 {
                     return BadRequest(new { message = "Failed to add topic" });
