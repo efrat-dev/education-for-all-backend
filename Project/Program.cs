@@ -93,6 +93,13 @@ if (app.Environment.IsDevelopment())
 
 // Enable HTTPS redirection and middleware pipeline
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    var origin = context.Request.Headers["Origin"].ToString();
+    context.Response.Headers.Add("X-Debug-Origin", origin);
+    await next.Invoke();
+});
+
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
 app.UseAuthorization();
