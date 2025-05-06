@@ -42,7 +42,8 @@ namespace Project.Services
                 config["Jwt:Issuer"],
                 config["Jwt:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(15),
+                expires: DateTime.UtcNow.AddMinutes(2),
+                //expires: DateTime.UtcNow.AddMinutes(15),
                 signingCredentials: creds
             );
 
