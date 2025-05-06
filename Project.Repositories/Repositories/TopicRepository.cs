@@ -10,6 +10,7 @@ namespace Project.Repositories.Repositories
 
         public TopicRepository(IContext context)
         {
+            Console.WriteLine("הגעתי לרפוזיטורי של טופיק");
             this.context = context;
         }
 
@@ -39,6 +40,7 @@ namespace Project.Repositories.Repositories
 
         public async Task<List<Topic>> GetAllAsync()
         {
+            Console.WriteLine("הגעתי לרפוזיטורי של טופיק לפונקציה גטאול");
             return await context.Topics
                 .Include(t => t.Posts)
                 .Include(t => t.Counselors)
