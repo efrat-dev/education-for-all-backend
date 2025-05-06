@@ -2,6 +2,7 @@
 using Common.Dto;
 using Project.Services.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.CognitiveServices.Speech.Audio;
 
 namespace Project.Services.Services
 {
@@ -24,7 +25,12 @@ namespace Project.Services.Services
                 throw new InvalidOperationException("Azure Speech configuration is missing.");
 
             _speechConfig = SpeechConfig.FromSubscription(azureKey, azureRegion);
-            _speechSynthesizer = new SpeechSynthesizer(_speechConfig);
+
+            // Use AudioConfig with stream output to avoid relying on local audio system — required for environments like Render that lack audio playback support
+            //On Render cloud, don't use it:
+            //_speechSynthesizer = new SpeechSynthesizer(_speechConfig);
+            //Use it!
+            var audioConfig = AudioConfig.FromStreamOutput(new PullAudioOutputStream());
         }
 
 
