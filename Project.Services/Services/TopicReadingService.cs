@@ -31,6 +31,7 @@ namespace Project.Services.Services
             //_speechSynthesizer = new SpeechSynthesizer(_speechConfig);
             //Use it!
             var audioConfig = AudioConfig.FromStreamOutput(new PullAudioOutputStream());
+            _speechSynthesizer = new SpeechSynthesizer(_speechConfig, audioConfig);
         }
 
 
