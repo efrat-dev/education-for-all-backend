@@ -8,6 +8,8 @@ using System.Text;
 
 // Required namespaces for authentication, swagger, EF, and custom services
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Define a CORS policy name
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
