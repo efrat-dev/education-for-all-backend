@@ -30,6 +30,7 @@ namespace Project.Controllers
         [HttpGet]
         public async Task<List<CounselorDto>> GetAll()
         {
+            Console.WriteLine("בתוך גטאול של יועצים");
             return await service.GetAllAsync();
         }
 
