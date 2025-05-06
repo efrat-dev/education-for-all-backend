@@ -18,11 +18,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000",
-                              "https://education-for-all.onrender.com").
+                          policy.AllowAnyOrigin().
                           AllowAnyMethod().
                           AllowAnyHeader().
-                          AllowCredentials().
                           WithExposedHeaders("Content-Disposition", "Access-Control-Allow-Origin");
                       });
 
@@ -93,12 +91,6 @@ if (app.Environment.IsDevelopment())
 
 // Enable HTTPS redirection and middleware pipeline
 app.UseHttpsRedirection();
-app.Use(async (context, next) =>
-{
-    var origin = context.Request.Headers["Origin"].ToString();
-    context.Response.Headers.Add("X-Debug-Origin", origin);
-    await next.Invoke();
-});
 
 app.UseCors(MyAllowSpecificOrigins);
 app.UseAuthentication();
