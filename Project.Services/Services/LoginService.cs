@@ -103,7 +103,6 @@ namespace Project.Services.Services
             if (userId == null || role == null) return new StatusCodeResult(StatusCodes.Status401Unauthorized);
 
             var newAccessToken = _tokenService.GenerateAccessToken(userId, role);
-            var newRefreshToken = await _tokenService.GenerateRefreshTokenAsync(int.Parse(userId));
 
             var environment = _configuration["ASPNETCORE_ENVIRONMENT"];
             var cookieOptions = new CookieOptions

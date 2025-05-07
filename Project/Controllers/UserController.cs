@@ -36,7 +36,6 @@ namespace Project.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromForm] UserDto entity)
         {
-            Console.WriteLine("בתוך הרשמה של משתמש");
             return await registrationService.RegisterUserAsync(
                 entity,
                 service,

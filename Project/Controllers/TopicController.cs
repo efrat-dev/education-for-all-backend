@@ -15,7 +15,6 @@ namespace Project.Controllers
 
         public TopicController(IForumService<TopicDto> topicService, IPostService postService, ITopicReadingService topicReadingService)
         {
-            Console.WriteLine("הגעתי לקונטרולר של טופיק");
             _topicService = topicService;
             _postService = postService;
             _topicReadingService = topicReadingService;
@@ -30,7 +29,6 @@ namespace Project.Controllers
         [HttpGet]
         public async Task<List<TopicDto>> GetAll()
         {
-            Console.WriteLine("הגעתי לקונטרולר של טופיק לפונקציה גטאול");
             return await _topicService.GetAllAsync();
         }
 
@@ -40,9 +38,7 @@ namespace Project.Controllers
         {
             try
             {
-                Console.WriteLine("אני בתוך פוסט של טופיק");
                 var addedTopic = await _topicService.AddAsync(topic);
-                Console.WriteLine("אחרי הסרויויס"+ addedTopic);
                 if (addedTopic == null)
                 {
                     return BadRequest(new { message = "Failed to add topic" });

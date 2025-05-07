@@ -6,13 +6,16 @@ using Project.Repositories.Repositories;
 using Project.Services.Services;
 using System.Text;
 
-// Required namespaces for authentication, swagger, EF, and custom services
 var builder = WebApplication.CreateBuilder(args);
+
+//For Render Cloud
 var port = Environment.GetEnvironmentVariable("PORT") ?? "10000";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // Define a CORS policy name
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>();
 
 // Configure CORS to allow requests from the frontend running at localhost:3000
 builder.Services.AddCors(options =>
@@ -20,8 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000",
-                              "https://education-for-all.onrender.com").
+                          policy.WithOrigins(allowedOrigins).
                           AllowAnyMethod().
                           AllowAnyHeader().
                           AllowCredentials().

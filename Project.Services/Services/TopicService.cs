@@ -13,7 +13,6 @@ namespace Project.Services.Services
 
         public TopicService(IForumRepository<Topic> topicRepository, IMapper mapper)
         {
-            Console.WriteLine("הגעתי לסרוויס של טופיק");
             this.topicRepository = topicRepository;
             this.mapper = mapper;
         }
@@ -31,7 +30,6 @@ namespace Project.Services.Services
 
         public async Task<List<TopicDto>> GetAllAsync()
         {
-            Console.WriteLine(" הגעתי לסרוויס של טופיק לפונקציה גטאול");
             var topics = await topicRepository.GetAllAsync();
             return mapper.Map<List<TopicDto>>(topics);
         }

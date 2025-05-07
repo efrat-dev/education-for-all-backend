@@ -18,7 +18,6 @@ namespace Project.Controllers
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn([FromBody] LoginRequestDto loginModel)
         {
-            Console.WriteLine("בתוך התחברות");
             return await _loginService.SignInAsync(loginModel);
         }
 
