@@ -103,9 +103,9 @@ The API should now be running on the port displayed in the console output.
   },
   "AllowedHosts": "*",
   "Jwt": {
-    "Key": "YourSecureKeyHere", 
-    "Issuer": "http://localhost:YOUR_PORT",
-    "Audience": "http://localhost:YOUR_PORT"
+    "Key": "YourSecureKeyHere",
+    "Issuer": "http://localhost:5000",
+    "Audience": "http://localhost:5000"
   },
   "EmailSettings": {
     "SiteManagerEmail": "your-email@example.com",
@@ -121,6 +121,10 @@ The API should now be running on the port displayed in the console output.
     "Key": "YourAzureSpeechKeyHere",
     "Region": "your-region"
   },
-  "AllowedOrigins": "http://localhost:3000,http://your-frontend-domain.com",
-  "ASPNETCORE_ENVIRONMENT": "Development"
+  "AllowedOrigins": [
+    "http://localhost:3000",
+    "http://your-frontend-domain.com"
+  ],
+  "ASPNETCORE_ENVIRONMENT": "Development",
+  "DefaultConnection": "User Id=your-user;Password=your-password;Server=localhost;Port=5432;Database=your-database"
 }
