@@ -22,6 +22,7 @@ namespace Project.Services.Services
             services.AddScoped<ITopicReadingService, TopicReadingService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
             services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IDeleteTokenService, DeleteTokenService>();
 
             services.AddAutoMapper(typeof(MapProfile));
             return services;

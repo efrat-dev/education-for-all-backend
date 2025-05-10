@@ -6,5 +6,6 @@ namespace Project.Services.Interfaces
     {
         Task<List<PostDto>> GetPostsByTopicIdAsync(int topicId);
         Task<int> LikePostAsync(int postId);
+        Task SendReportEmailAsync(PostDto post, string token, bool isDevelopment);
     }
 }

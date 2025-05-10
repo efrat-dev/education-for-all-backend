@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Common.Dto;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Project.Repositories.Entities;
 using Project.Repositories.Interfaces;
 using Project.Services.Interfaces;
@@ -10,13 +11,18 @@ namespace Project.Services.Services
     public class PostService : IPostService
     {
         private readonly IPostRepository postRepository;
+        private readonly IEmailService emailService;
+        private readonly IConfiguration configuration;
         private readonly IMapper mapper;
 
-        public PostService(IPostRepository postRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, IEmailService emailService, IConfiguration configuration, IMapper mapper)
         {
             this.postRepository = postRepository;
+            this.emailService = emailService;
+            this.configuration = configuration;
             this.mapper = mapper;
         }
+
         public async Task<PostDto?> AddAsync(PostDto entity)
         {
             var post = await postRepository.AddAsync(mapper.Map<Post>(entity));
@@ -65,6 +71,25 @@ namespace Project.Services.Services
             await postRepository.UpdateAsync(post);
 
             return post.Likes;
+        }
+        public async Task SendReportEmailAsync(PostDto post, string token, bool isDevelopment)
+        {
+            var siteManagerEmail = configuration["EmailSettings:SiteManagerEmail"];
+            var siteManagerName = configuration["EmailSettings:SiteManagerName"];
+
+            if (string.IsNullOrEmpty(siteManagerEmail) || string.IsNullOrEmpty(siteManagerName))
+            {
+                throw new InvalidOperationException("Missing site manager configuration");
+            }
+
+            //Create a link for deleting the post
+            string baseUrl = isDevelopment
+            ? "http://localhost:3000"
+            : "https://education-for-all.onrender.com";
+
+            string deleteLink = $"{baseUrl}/delete-post/{token}";
+
+            await emailService.SendReportEmailAsync(siteManagerName, siteManagerEmail, post.Content, deleteLink);
         }
     }
 }

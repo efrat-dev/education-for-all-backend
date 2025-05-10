@@ -12,16 +12,16 @@ namespace Project.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostService service;
-        private readonly IEmailService emailService;
-        private readonly IConfiguration configuration;
+        private readonly IDeleteTokenService deleteTokenService;
+        private readonly IWebHostEnvironment env;
         private readonly ApplicationDbContext context;
 
-        public PostController(IPostService service, IEmailService emailService, IConfiguration configuration, ApplicationDbContext context)
+        public PostController(IPostService service, IEmailService emailService, IDeleteTokenService deleteTokenService, IConfiguration configuration, IWebHostEnvironment env, ApplicationDbContext context)
         {
             this.service = service;
-            this.emailService = emailService;
-            this.configuration = configuration;
+            this.deleteTokenService = deleteTokenService;
             this.context = context;
+            this.env = env;
         }
 
         [HttpGet("{id}")]
@@ -74,47 +74,19 @@ namespace Project.Controllers
             }
         }
 
-        // Endpoint to send a report email to the site manager
         [Authorize]
         [HttpPost("send-report-email/{postId}")]
         public async Task<IActionResult> SendReportEmail(int postId)
         {
-            // Retrieve post data
-            PostDto post = await service.GetByIdAsync(postId);
-            if (post == null)
-            {
-                return NotFound("Post not found");
-            }
-
-            // Get site manager's email and name from configuration
-            string? siteManagerEmail = configuration["EmailSettings:SiteManagerEmail"];
-            string? siteManagerName = configuration["EmailSettings:SiteManagerName"];
-
-            if (string.IsNullOrEmpty(siteManagerEmail))
-            {
-                throw new InvalidOperationException("Missing configuration: EmailSettings:SiteManagerEmail");
-            }
-
-            if (string.IsNullOrEmpty(siteManagerName))
-            {
-                throw new InvalidOperationException("Missing configuration: EmailSettings:siteManagerName");
-            }
-
-            // Generate a unique token for deletion request
-            var token = Guid.NewGuid().ToString();
-            var deleteToken = new DeleteTokenDto
-            {
-                PostId = postId,
-                Token = token,
-                Expiration = DateTime.UtcNow.AddHours(48)
-            };
-            context.DeleteTokens.Add(deleteToken);
-            await context.SaveChangesAsync();
+            var post = await service.GetByIdAsync(postId);
+            if (post == null) return NotFound("Post not found");
 
             // Create a link for deleting the post
-            string deleteLink = $"http://localhost:3000/delete-post/{token}";
-            // Send report email to the site manager
-            await emailService.SendReportEmailAsync(siteManagerName, siteManagerEmail, post.Content, deleteLink);
+            bool isDevelopment = env.IsDevelopment();
+
+            var token = await deleteTokenService.GenerateTokenAsync(postId);
+
+            await service.SendReportEmailAsync(post, token, isDevelopment);
             return Ok("Email sent");
         }
 
@@ -139,34 +111,14 @@ namespace Project.Controllers
             return Ok(new { post.Content });
         }
 
-        // Remove the reported post and delete the token
         [HttpDelete("delete-post/{token}")]
         public async Task<IActionResult> DeletePost(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                return BadRequest("Token is missing");
-            }
+            var deleteToken = await deleteTokenService.GetTokenAsync(token);
+            if (deleteToken == null) return BadRequest("Invalid or expired token");
 
-            var deleteToken = await context.DeleteTokens.FirstOrDefaultAsync(dt => dt.Token == token);
-
-            if (deleteToken == null || deleteToken.Expiration < DateTime.UtcNow)
-            {
-                return BadRequest("Invalid or expired token");
-            }
-
-            var post = await context.Posts.FindAsync(deleteToken.PostId);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            context.Posts.Remove(post);
-            await context.SaveChangesAsync();
-
-            context.DeleteTokens.Remove(deleteToken);
-            await context.SaveChangesAsync();
-
+            await service.DeleteByIdAsync(deleteToken.PostId);
+            await deleteTokenService.DeleteTokenAsync(token);
             return Ok("Post deleted successfully");
         }
     }
