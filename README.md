@@ -10,6 +10,8 @@ Built using **C#** and **ASP.NET Core Web API**, this server handles user authen
 - Integrates voice-based features and email services
 - Built with a modular, scalable architecture and modern design patterns
 
+You can visit the live application here: [Education for All](https://education-for-all.onrender.com/)
+
 ## ⚙️ Tech Stack
 
 - **C#**, **.NET 6**, **ASP.NET Core Web API**
