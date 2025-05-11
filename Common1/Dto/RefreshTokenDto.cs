@@ -23,8 +23,5 @@ namespace Common.Dto
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? RevokedAt { get; set; } 
-
-        [ForeignKey("UserId")]
-        public virtual User User { get; set; } 
     }
 }
