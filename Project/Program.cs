@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Project.DataContext;
@@ -43,7 +44,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
 
 // Configure dependency injection for database context
-builder.Services.AddDbContext<IContext, ApplicationDbContext>();
+builder.Services.AddDbContext<IContext, ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddDbContext<IContext, ApplicationDbContext>();
 
 
 // Configure JWT authentication and token validation parameters
